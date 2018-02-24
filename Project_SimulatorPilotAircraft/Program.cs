@@ -10,6 +10,18 @@ namespace Project_SimulatorPilotAircraft
     {
         static void Main(string[] args)
         {
+
+            Aircraft aircraft = new Aircraft();
+
+            aircraft.StartSimulator();
+
         }
+
+
+        static void TestStart(ConsoleKeyInfo k)
+        {
+
+        }
+
     }
 }
