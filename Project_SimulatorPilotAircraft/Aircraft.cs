@@ -62,7 +62,7 @@ namespace Project_SimulatorPilotAircraft
             // UNDONE допустим добавил диспетчеров
             Dispatchers.Add(new Dispatcher("Bob", 0));
 
-            //KeyPress += Test2;
+
             KeyPress += SpeedIncrease;
             KeyPress += SpeedDecrease;
             KeyPress += HeightIncrease;
