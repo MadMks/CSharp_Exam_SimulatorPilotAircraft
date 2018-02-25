@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.Console;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,10 @@ namespace Project_SimulatorPilotAircraft
     /// </summary>
     class Aircraft
     {
+        private const int _minNumberDispatcher = 2;
+
+        ConsoleKeyInfo key;
+
         /// <summary>
         /// Скорость самолета.
         /// </summary>
@@ -22,9 +27,18 @@ namespace Project_SimulatorPilotAircraft
             get { return _speed; }
             set
             {
-                _speed = value;
+                if (ASufficientNumberOfDispatchers())
+                {
+                    _speed = value;
 
-                MessageToDispatchers();
+                    MessageToDispatchers();
+                }
+                else
+                {
+                    Console.WriteLine(" Полет не модет начаться, " + 
+                        "если диспетчеров меньше двух.");   // TODO m недостаточно диспетч.
+                }
+                
             }
         }
 
@@ -44,9 +58,17 @@ namespace Project_SimulatorPilotAircraft
             get { return _height; }
             set
             {
-                _height = value;
+                if (ASufficientNumberOfDispatchers())
+                {
+                    _height = value;
 
-                MessageToDispatchers();
+                    MessageToDispatchers();
+                }
+                else
+                {
+                    Console.WriteLine(" Полет не модет начаться, " +
+                        "если диспетчеров меньше двух.");   // TODO m недостаточно диспетч.
+                }
             }
         }
 
@@ -60,7 +82,8 @@ namespace Project_SimulatorPilotAircraft
             Dispatchers = new List<Dispatcher>();
 
             // UNDONE допустим добавил диспетчеров
-            Dispatchers.Add(new Dispatcher("Bob", 0));
+            Dispatchers.Add(new Dispatcher("Bob"));
+            Dispatchers.Add(new Dispatcher("John"));
 
 
             KeyPress += SpeedIncrease;
@@ -72,8 +95,24 @@ namespace Project_SimulatorPilotAircraft
             foreach (Dispatcher item in Dispatchers)
             {
                 ChangesInMeasurements += item.CalculationOfFlightAltitude;
+                //item.ProvideRecommendations += Recommendations;
             }
         }
+
+        private void ShowRecommendations()
+        {
+            if (Speed > 50)
+            {
+                Console.WriteLine();
+                foreach (Dispatcher item in Dispatchers)
+                {
+                    Console.WriteLine($" Диспетчер {item.Name}: "
+                        + $"рекомендуемая высота: {item.RecommendedHeight}");
+                }
+            }
+        }
+
+
 
 
         // Делегаты.
@@ -100,27 +139,64 @@ namespace Project_SimulatorPilotAircraft
         /// </summary>
         public void StartSimulator()
         {
-            // TODO вывод меню.
-            Console.WriteLine(" Вывел меню");
 
-
-            // TODO запрос нажать клавишу - всегда последний.
-            KeyInputRequest();
-        }
-
-
-        private void KeyInputRequest()
-        {
-            ConsoleKeyInfo key;
 
             do
             {
-                Console.WriteLine(":");
-                key = Console.ReadKey();
+                Console.Clear();
 
-                OnKeyPress(key);    // HACK KeyPress?.Invoke(key);
+                ShowAircraftData();
 
+                ShowRecommendations();
+
+                // TODO вывод меню.
+                //Console.WriteLine("\n Вывел меню");
+                ShowMenuPilot();
+
+
+                // TODO запрос нажать клавишу - всегда последний.
+                KeyInputRequest();
+
+                
             } while (key.Key != ConsoleKey.Escape);
+        }
+
+        /// <summary>
+        /// Вывод меню пилота.
+        /// </summary>
+        private void ShowMenuPilot()
+        {
+            WriteLine("\n Меню:\n" + new string('=', 36));
+            Console.WriteLine(" F1 - add");
+            Console.WriteLine(" F2 - del");
+            WriteLine(" R: +50км/ч\tS R: +150км/ч\tLeft: -50км/ч\tS L: -150км/ч");
+            Console.WriteLine(" S R - add");
+        }
+
+
+        /// <summary>
+        /// Вывод данных самолета.
+        /// </summary>
+        private void ShowAircraftData()
+        {
+            Console.WriteLine("\n Данные самолета:");
+            Console.WriteLine($" Скорость: {Speed}км/ч\t Высота: {Height}м.");
+            Console.WriteLine("\n" + new string('=', 36));
+        }
+
+        private void KeyInputRequest()
+        {
+            //ConsoleKeyInfo key;
+
+            //do
+            //{
+            Console.WriteLine(" Запрос ввода:");
+            key = Console.ReadKey();
+
+            //OnKeyPress(key);    // HACK KeyPress?.Invoke(key);
+            KeyPress?.Invoke(key);
+
+            //} while (key.Key != ConsoleKey.Escape);
         }
 
 
@@ -128,10 +204,10 @@ namespace Project_SimulatorPilotAircraft
         /// Метод вызывается при нажатии на клавишу.
         /// </summary>
         /// <param name="key">Нажатая клавиша.</param>
-        public void OnKeyPress(ConsoleKeyInfo key)  // TODO UNDONE не особо нужен
-        {
-            KeyPress?.Invoke(key);
-        }
+        //public void OnKeyPress(ConsoleKeyInfo key)  // TODO UNDONE не особо нужен
+        //{
+        //    KeyPress?.Invoke(key);
+        //}
 
 
         /// <summary>
@@ -235,6 +311,19 @@ namespace Project_SimulatorPilotAircraft
             }
         }
 
+
+
+        /// <summary>
+        /// Достаточное количество диспетчеров.
+        /// </summary>
+        /// <returns>
+        /// "true" если диспетчеров хватает,
+        /// "false" если не хватает.
+        /// </returns>
+        public bool ASufficientNumberOfDispatchers()
+        {
+            return Dispatchers.Count >= _minNumberDispatcher;
+        }
 
 
     }

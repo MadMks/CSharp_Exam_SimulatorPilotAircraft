@@ -16,6 +16,16 @@ namespace Project_SimulatorPilotAircraft
         /// </summary>
         public int Correcting { get; }
 
+        public int RecommendedHeight { get; set; }
+
+
+        // Делегаты.
+
+        //public delegate int MessageDel(int height);
+
+        // События.
+
+        //public event MessageDel ProvideRecommendations;
 
         // Конструкторы.
 
@@ -24,18 +34,19 @@ namespace Project_SimulatorPilotAircraft
             rand = new Random();
         }
 
-        public Dispatcher() : this ("no name", 0)
+        public Dispatcher() : this ("no name")
         {
 
         }
 
-        public Dispatcher(string name, int correcting)
+        public Dispatcher(string name)
         {
             Correcting = rand.Next(-200, 200);
-            Console.WriteLine(" >>> " + Correcting);
+            //Console.WriteLine(" >>> " + Correcting);
 
             Name = name;
-            Correcting = correcting;
+
+            
         }
 
 
@@ -45,14 +56,17 @@ namespace Project_SimulatorPilotAircraft
         /// </summary>
         public void CalculationOfFlightAltitude(int speed, int height)
         {
-            Console.WriteLine(" Диспетчер получил данные: "
+            Console.WriteLine($" Диспетчер \"{Name}\" получил данные: "
                 + $"speed={speed}, height{height}");
 
-            int recommendedHeight;
+            Console.WriteLine($" Corr = {Correcting}");
+            //int recommendedHeight;
 
-            recommendedHeight = (7 * speed) - Correcting;
+            RecommendedHeight = (7 * speed) - Correcting;
 
-            Console.WriteLine($" Рекомендуемая высота: {recommendedHeight}");
+            //Console.WriteLine($" Рекомендуемая высота: {recommendedHeight}");
+            //ProvideRecommendations?.Invoke(recommendedHeight);
+            //return recommendedHeight;
         }
     }
 }
